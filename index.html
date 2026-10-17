@@ -11,7 +11,6 @@
   <title>Lumina</title>
   
   <!-- PWA Manifest -->
-<link rel="apple-touch-icon" sizes="180x180" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAYAAAA9zQYyAAAEw0lEQVR4nO3cSW7bQBBG4ZKQvQCvfEQfQksfQkfUyoBOkCwCGrRMSU2yh6q/3rdJkAA2h+dKc4gO5sDp9PZ39DZgv9vt6zB6G4ZsAAHnMCLwbt+QiHPrFXfTb0LEWNIy7iZfmJBRokXYx9pfkJhRqkUr1X5CCBl71JrWVSY0MWOvWg3t+qkgZLSwZ1pvntDEjFb2tLUpaGJGa1sbWx00MaOXLa2tCpqY0dva5oqDJmaMsqa9oqCJGaOVNvgyaGKGFyUtVn/0DYz0NGimM7x51eTDoIkZXj1rkyUHpCwGzXSGd48a/RU0MSOKpVZZckDKj6CZzojmvlkmNKQQNKR8B81yA1HN22VCQwpBQ8rRjOUG4psaZkJDCkFDCkFDyoH1M5QwoSGFoCGFoCGFoCGFoCHlz+gNWOtyvo7ehHQ+Pt9Hb0KxMBP6cr7a5XwNdXAVfHy+fx/7CEIEPQ+ZqPuZYr7/vWfug54CJuq+lmKOELX7oM2IureoMZs5D3opYKJu61XM3sN2HbQZUfcUPWazAEGbEXUPCjGbOX/b7v4Alhx0bLM2Zq/HOlTQZo+jRh2lk9nrMQ+x5JhjqdFWxGXGXLigzQi5h4gxmwUN2oyoW4oas1ngoIElBA0pBA0pBA0pBA0pBA0pBA0pBA0pBA0pBA0pBA0pBA0pBA0pBA0p4T4KrJaor0eukfH12pQTOkPMZnn2cy5d0NlOcrb9TRc0tBE0pKQLOtuFUrb9TRe0WZ6TnGU/59Letst4sjNIOaGhi6AhhaAhhaAhhaAhhaAhhaAhhaAhhaAhJe2TwgyvVWZ8GppyQmeI2SzPfs6lCzrbSc62v+mChjaChpR0QWe7UMq2v+mCNstzkrPs51za23YZT3YGKSc0dBE0pBA0pBA0pBA0pBA0pBA0pBA0pBA0pKR9UjjqtUqeULaVckKPfEc42/vJvaUL2kNQHrZBVbqgoY2gISVd0B4uyjxsg6p0QZuNDYqY20p7246wNKWc0NBF0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JBC0JASNuiPz3c+sKWRy/ka9v9chgyamNuLGnW4oOcxE3Z985AjRh0q6KWYp18Je5/pGM6P6/TnkaIO87kcz2K+/3usNx8MS8MiyvENMaGJub2lqRxxUrsPmpj7UYj6cDq9/R29Ec8Qc38lQ8Qr9xPajJh7ezWpPXM/oc2MmAd5NKk9CxG02e+lB/qIstSYhAl6Qsz9RQh5Ei5o4JkQF4VAKYKGFIKGFIKGFIKGFIKGFIKGlOPt9nUYvRFADbfb14EJDSkEDSkEDSlHs/9rj9EbAuwxNcyEhhSChpTvoFl2IKp5u0xoSCFoSPkRNMsORHPfLBMaUn4FzZRGFEutLk5oooZ3jxplyQEpD4NmSsOrZ20+ndBEDW9eNcmSA1JeBs2UhhclLRZNaKLGaKUNFi85iBqjrGlv1RqaqNHb2uZWXxQSNXrZ0tqmuxxEjda2Nrb5th1Ro5U9bVWJkg9NRw01hmSVBytMa+xVq6HqITKtsUbtYVj90TfTGqVatNI0PqY1lrQcet2mKXHn1utf7iHLA+LOYcTy08V6l8A1eLh++geXTHeQ5oVf7wAAAABJRU5ErkJggg==">
   <link rel="manifest" href="manifest.webmanifest">
   
   <!-- Apple Touch Icons (PNG required for iPhone home screen) -->
@@ -926,6 +925,15 @@
     </div>
     
     <div class="reader-bottom" id="readerBottom">
+      <button class="bottom-btn" id="btnBottomLib" title="서재">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </button>
+      <button class="bottom-btn" id="btnBottomHome" title="홈">
+        <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      </button>
+      <button class="bottom-btn" id="btnBottomOpen" title="파일 열기">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+      </button>
       <button class="bottom-btn" id="btnSettings" title="설정">
         <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
       </button>
@@ -934,9 +942,6 @@
       </button>
       <button class="bottom-btn" id="btnNight" title="나이트모드">
         <svg viewBox="0 0 24 24" id="nightIcon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-      </button>
-      <button class="bottom-btn" id="btnMarkFinished" title="다 읽음">
-        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
       </button>
     </div>
   </div>
@@ -1847,6 +1852,9 @@
       document.getElementById('contentInner').innerHTML = content;
       document.getElementById('contentInner').classList.toggle('serif', APP.settings.font === 'serif');
 
+      // 책 열 때 메뉴 항상 표시
+      showReaderChrome();
+
       // restore scroll
       const scroller = document.getElementById('readerContent');
       setTimeout(() => {
@@ -1879,32 +1887,46 @@
     }
 
     // ========== SCROLL & TOOLBAR AUTO-HIDE ==========
+    function showReaderChrome() {
+      document.getElementById('readerToolbar').classList.remove('hidden');
+      document.getElementById('readerBottom').classList.remove('hidden');
+      APP.toolbarVisible = true;
+    }
+
+    function hideReaderChrome() {
+      document.getElementById('readerToolbar').classList.add('hidden');
+      document.getElementById('readerBottom').classList.add('hidden');
+      APP.toolbarVisible = false;
+    }
+
+    function toggleReaderChrome() {
+      if (APP.toolbarVisible) hideReaderChrome();
+      else showReaderChrome();
+    }
+
     function setupScrollHide() {
       const scroller = document.getElementById('readerContent');
       let lastY = 0;
       let ticking = false;
+      let touchStartY = 0;
 
+      // 스크롤: 아래로 숨김, 위로(또는 맨 위) 표시
       scroller.addEventListener('scroll', () => {
         if (!ticking) {
           requestAnimationFrame(() => {
             const y = scroller.scrollTop;
-            const toolbar = document.getElementById('readerToolbar');
-            const bottom = document.getElementById('readerBottom');
+            const dy = y - lastY;
 
-            if (y > lastY + 8 && y > 60) {
-              // scrolling down -> hide
-              toolbar.classList.add('hidden');
-              bottom.classList.add('hidden');
-              APP.toolbarVisible = false;
-            } else if (y < lastY - 4) {
-              // scrolling up -> show
-              toolbar.classList.remove('hidden');
-              bottom.classList.remove('hidden');
-              APP.toolbarVisible = true;
+            if (y <= 20) {
+              // 문서 맨 위에서는 항상 표시
+              showReaderChrome();
+            } else if (dy > 6 && y > 40) {
+              hideReaderChrome();
+            } else if (dy < -3) {
+              showReaderChrome();
             }
             lastY = y;
 
-            // save progress
             if (APP.currentBookId) {
               const max = scroller.scrollHeight - scroller.clientHeight;
               const prog = max > 0 ? Math.min(1, y / max) : 0;
@@ -1915,6 +1937,41 @@
           ticking = true;
         }
       }, { passive: true });
+
+      // 본문 탭 → 메뉴 토글 (스크롤과 구분)
+      let tapStartX = 0, tapStartY = 0, tapMoved = false;
+      scroller.addEventListener('touchstart', (e) => {
+        if (!e.touches[0]) return;
+        tapStartX = e.touches[0].clientX;
+        tapStartY = e.touches[0].clientY;
+        touchStartY = tapStartY;
+        tapMoved = false;
+      }, { passive: true });
+
+      scroller.addEventListener('touchmove', (e) => {
+        if (!e.touches[0]) return;
+        const dx = Math.abs(e.touches[0].clientX - tapStartX);
+        const dy = Math.abs(e.touches[0].clientY - tapStartY);
+        if (dx > 8 || dy > 8) tapMoved = true;
+      }, { passive: true });
+
+      scroller.addEventListener('touchend', (e) => {
+        if (tapMoved) return;
+        // 가장자리 탭은 무시(버튼 영역과 겹침 방지)
+        const t = e.changedTouches && e.changedTouches[0];
+        if (!t) return;
+        const edge = 16;
+        if (t.clientY < edge || t.clientY > window.innerHeight - edge) return;
+        toggleReaderChrome();
+      }, { passive: true });
+
+      // 데스크탑 클릭
+      scroller.addEventListener('click', (e) => {
+        // 텍스트 선택 중이거나 링크 등이면 무시
+        if (window.getSelection && String(window.getSelection()).length > 0) return;
+        if (e.target.closest('a, button')) return;
+        toggleReaderChrome();
+      });
     }
 
     // ========== TTS (System) ==========
@@ -2021,11 +2078,19 @@
         APP.settings.night = !APP.settings.night;
         DB.saveSettings();
       });
-      document.getElementById('btnMarkFinished').addEventListener('click', () => {
-        if (APP.currentBookId) {
-          markFinished(APP.currentBookId);
-          showScreen('library');
-        }
+      // 하단 네비: 서재 / 홈 / 파일 열기 (메뉴가 숨어도 다시 띄운 뒤 이동)
+      document.getElementById('btnBottomLib').addEventListener('click', () => {
+        speechSynthesis.cancel();
+        APP.isSpeaking = false;
+        showScreen('library');
+      });
+      document.getElementById('btnBottomHome').addEventListener('click', () => {
+        speechSynthesis.cancel();
+        APP.isSpeaking = false;
+        showScreen('home');
+      });
+      document.getElementById('btnBottomOpen').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
       });
 
       // Overlays close
