@@ -1,0 +1,1864 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Lumina">
+  <meta name="theme-color" content="#0f0f12">
+  <meta name="description" content="프리미엄 오프라인 독서 앱 - Lumina">
+  <title>Lumina</title>
+  
+  <!-- PWA Manifest (inline) -->
+  <link rel="manifest" href="data:application/manifest+json,{
+    &quot;name&quot;: &quot;Lumina&quot;,
+    &quot;short_name&quot;: &quot;Lumina&quot;,
+    &quot;description&quot;: &quot;프리미엄 오프라인 독서 앱&quot;,
+    &quot;start_url&quot;: &quot;./index.html&quot;,
+    &quot;display&quot;: &quot;standalone&quot;,
+    &quot;background_color&quot;: &quot;#0f0f12&quot;,
+    &quot;theme_color&quot;: &quot;#0f0f12&quot;,
+    &quot;orientation&quot;: &quot;any&quot;,
+    &quot;icons&quot;: [
+      {
+        &quot;src&quot;: &quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23a78bfa'/%3E%3Cstop offset='100%25' stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='%230f0f12'/%3E%3Cpath d='M128 120h256a24 24 0 0124 24v224a24 24 0 01-24 24H128a24 24 0 01-24-24V144a24 24 0 0124-24z' fill='none' stroke='url(%23g)' stroke-width='28'/%3E%3Cpath d='M176 200h160M176 256h160M176 312h96' stroke='url(%23g)' stroke-width='20' stroke-linecap='round'/%3E%3C/svg%3E&quot;,
+        &quot;sizes&quot;: &quot;512x512&quot;,
+        &quot;type&quot;: &quot;image/svg+xml&quot;,
+        &quot;purpose&quot;: &quot;any maskable&quot;
+      }
+    ]
+  }">
+  
+  <!-- Apple Touch Icon -->
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%23a78bfa'/%3E%3Cstop offset='100%25' stop-color='%236366f1'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='112' fill='%230f0f12'/%3E%3Cpath d='M128 120h256a24 24 0 0124 24v224a24 24 0 01-24 24H128a24 24 0 01-24-24V144a24 24 0 0124-24z' fill='none' stroke='url(%23g)' stroke-width='28'/%3E%3Cpath d='M176 200h160M176 256h160M176 312h96' stroke='url(%23g)' stroke-width='20' stroke-linecap='round'/%3E%3C/svg%3E">
+  
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%230f0f12'/%3E%3Cpath d='M25 24h50a5 5 0 015 5v42a5 5 0 01-5 5H25a5 5 0 01-5-5V29a5 5 0 015-5z' fill='none' stroke='%23a78bfa' stroke-width='6'/%3E%3Cpath d='M35 40h30M35 52h30M35 64h18' stroke='%23a78bfa' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
+
+  <style>
+    :root {
+      --bg: #faf9f7;
+      --bg-secondary: #f0eeea;
+      --text: #1a1a1a;
+      --text-secondary: #5c5c5c;
+      --accent: #6366f1;
+      --accent-soft: rgba(99, 102, 241, 0.12);
+      --border: rgba(0,0,0,0.08);
+      --card: #ffffff;
+      --shadow: 0 4px 24px rgba(0,0,0,0.06);
+      --radius: 16px;
+      --font-body: "Pretendard", "Apple SD Gothic Neo", "Noto Sans KR", -apple-system, BlinkMacSystemFont, sans-serif;
+      --font-serif: "Noto Serif KR", "Apple Myungjo", Georgia, serif;
+      --font-size: 18px;
+      --line-height: 1.85;
+      --letter-spacing: 0.01em;
+      --max-width: 680px;
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+
+    [data-theme="night"] {
+      --bg: #0f0f12;
+      --bg-secondary: #1a1a1f;
+      --text: #e8e6e3;
+      --text-secondary: #a0a0a8;
+      --accent: #a78bfa;
+      --accent-soft: rgba(167, 139, 250, 0.15);
+      --border: rgba(255,255,255,0.08);
+      --card: #18181c;
+      --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      font-family: var(--font-body);
+      background: var(--bg);
+      color: var(--text);
+      overflow: hidden;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    /* ===== Screens ===== */
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .screen.active {
+      display: flex;
+    }
+
+    /* ===== HOME ===== */
+    #home {
+      background: linear-gradient(165deg, var(--bg) 0%, var(--bg-secondary) 100%);
+      justify-content: center;
+      align-items: center;
+      padding: 40px 24px;
+      text-align: center;
+    }
+
+    .logo {
+      width: 88px;
+      height: 88px;
+      margin: 0 auto 28px;
+      border-radius: 24px;
+      background: linear-gradient(135deg, #a78bfa, #6366f1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 12px 40px rgba(99, 102, 241, 0.35);
+      animation: float 4s ease-in-out infinite;
+    }
+    .logo svg {
+      width: 48px;
+      height: 48px;
+      stroke: white;
+      fill: none;
+      stroke-width: 2.2;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .app-name {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #a78bfa, #6366f1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .app-tagline {
+      font-size: 15px;
+      color: var(--text-secondary);
+      margin-bottom: 48px;
+      letter-spacing: 0.02em;
+    }
+
+    .home-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      width: 100%;
+      max-width: 300px;
+    }
+
+    .home-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 16px 24px;
+      border-radius: 14px;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: var(--card);
+      color: var(--text);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+    }
+    .home-btn:active {
+      transform: scale(0.97);
+    }
+    .home-btn.primary {
+      background: linear-gradient(135deg, #a78bfa, #6366f1);
+      color: white;
+      border: none;
+      box-shadow: 0 8px 28px rgba(99, 102, 241, 0.35);
+    }
+    .home-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .privacy-note {
+      margin-top: 36px;
+      font-size: 12px;
+      color: var(--text-secondary);
+      opacity: 0.7;
+      max-width: 280px;
+      line-height: 1.5;
+    }
+
+    /* ===== LIBRARY ===== */
+    #library {
+      background: var(--bg);
+    }
+
+    .lib-header {
+      padding: calc(16px + var(--safe-top)) 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+      z-index: 10;
+    }
+
+    .lib-title {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .lib-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .icon-btn {
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      border: none;
+      background: var(--bg-secondary);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .icon-btn:active {
+      transform: scale(0.92);
+      background: var(--accent-soft);
+    }
+    .icon-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .lib-tabs {
+      display: flex;
+      padding: 12px 20px 0;
+      gap: 8px;
+    }
+
+    .lib-tab {
+      flex: 1;
+      padding: 10px;
+      border: none;
+      background: transparent;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: inherit;
+    }
+    .lib-tab.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .lib-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px calc(24px + var(--safe-bottom));
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .book-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 12px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+    }
+    .book-card:active {
+      transform: scale(0.985);
+    }
+
+    .book-cover {
+      width: 52px;
+      height: 72px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #a78bfa33, #6366f133);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-size: 22px;
+      color: var(--accent);
+    }
+
+    .book-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .book-title {
+      font-size: 16px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .book-meta {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .progress-bar {
+      height: 4px;
+      background: var(--bg-secondary);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #a78bfa, #6366f1);
+      border-radius: 2px;
+      transition: width 0.3s;
+    }
+
+    .book-delete {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: all 0.2s;
+    }
+    .book-delete:hover, .book-delete:active {
+      opacity: 1;
+      background: rgba(239, 68, 68, 0.12);
+      color: #ef4444;
+    }
+    .book-delete svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--text-secondary);
+    }
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.5;
+      opacity: 0.4;
+      margin-bottom: 16px;
+    }
+
+    /* ===== READER ===== */
+    #reader {
+      background: var(--bg);
+    }
+
+    .reader-toolbar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      padding: calc(10px + var(--safe-top)) 12px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      z-index: 50;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .reader-toolbar.hidden {
+      transform: translateY(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .reader-toolbar .icon-btn {
+      background: transparent;
+    }
+
+    .reader-title {
+      font-size: 14px;
+      font-weight: 600;
+      max-width: 50%;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+    }
+
+    .reader-content {
+      flex: 1;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: calc(70px + var(--safe-top)) 24px calc(80px + var(--safe-bottom));
+      scroll-behavior: smooth;
+    }
+
+    .reader-content.serif {
+      font-family: var(--font-serif);
+    }
+
+    .content-inner {
+      max-width: var(--max-width);
+      margin: 0 auto;
+      font-size: var(--font-size);
+      line-height: var(--line-height);
+      letter-spacing: var(--letter-spacing);
+      color: var(--text);
+    }
+
+    /* Beautiful typography */
+    .content-inner h1 {
+      font-size: 1.8em;
+      font-weight: 700;
+      margin: 1.6em 0 0.8em;
+      letter-spacing: -0.02em;
+      line-height: 1.3;
+      color: var(--text);
+      border-bottom: 2px solid var(--accent-soft);
+      padding-bottom: 0.4em;
+    }
+
+    .content-inner h2 {
+      font-size: 1.4em;
+      font-weight: 700;
+      margin: 1.8em 0 0.7em;
+      letter-spacing: -0.01em;
+      color: var(--accent);
+    }
+
+    .content-inner h3 {
+      font-size: 1.2em;
+      font-weight: 600;
+      margin: 1.5em 0 0.6em;
+      color: var(--text);
+    }
+
+    .content-inner p {
+      margin: 0 0 1.2em;
+      text-align: justify;
+      word-break: keep-all;
+    }
+
+    .content-inner blockquote {
+      margin: 1.4em 0;
+      padding: 1em 1.2em;
+      background: var(--accent-soft);
+      border-left: 4px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      font-style: italic;
+      color: var(--text);
+    }
+
+    .content-inner blockquote p {
+      margin: 0;
+    }
+
+    .content-inner hr {
+      border: none;
+      height: 1px;
+      background: var(--border);
+      margin: 2.5em 0;
+    }
+
+    .chapter-marker {
+      text-align: center;
+      margin: 2.5em 0 1.5em;
+      font-size: 0.85em;
+      color: var(--text-secondary);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* Bottom bar (auto-hide) */
+    .reader-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 12px 16px calc(12px + var(--safe-bottom));
+      background: var(--bg);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      z-index: 50;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s;
+      transform: translateY(0);
+      opacity: 1;
+    }
+    .reader-bottom.hidden {
+      transform: translateY(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .bottom-btn {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      border: none;
+      background: transparent;
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+    .bottom-btn:active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .bottom-btn svg {
+      width: 22px;
+      height: 22px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.8;
+    }
+    .bottom-btn.active {
+      color: var(--accent);
+    }
+
+    /* ===== MODALS / PANELS ===== */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 100;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .overlay.active {
+      display: flex;
+    }
+
+    .panel {
+      background: var(--card);
+      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 520px;
+      max-height: 80vh;
+      overflow-y: auto;
+      padding: 24px 20px calc(24px + var(--safe-bottom));
+      animation: slideUp 0.3s ease;
+    }
+
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .panel-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .panel-close {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      border: none;
+      background: var(--bg-secondary);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+    .panel-close svg {
+      width: 18px;
+      height: 18px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+    }
+
+    /* Settings */
+    .setting-group {
+      margin-bottom: 24px;
+    }
+    .setting-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .font-options {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .font-opt {
+      flex: 1;
+      min-width: 80px;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--bg);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s;
+      font-family: inherit;
+      color: var(--text);
+    }
+    .font-opt.active {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .font-opt.serif {
+      font-family: var(--font-serif);
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .slider-row input[type="range"] {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-secondary);
+      outline: none;
+    }
+    .slider-row input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--accent);
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .slider-value {
+      font-size: 14px;
+      font-weight: 600;
+      min-width: 40px;
+      text-align: right;
+      color: var(--accent);
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0;
+    }
+    .toggle {
+      width: 50px;
+      height: 30px;
+      border-radius: 15px;
+      background: var(--bg-secondary);
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .toggle.on {
+      background: var(--accent);
+    }
+    .toggle::after {
+      content: '';
+      position: absolute;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: white;
+      top: 3px;
+      left: 3px;
+      transition: transform 0.2s;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+    .toggle.on::after {
+      transform: translateX(20px);
+    }
+
+    /* TOC */
+    .toc-list {
+      list-style: none;
+    }
+    .toc-item {
+      padding: 14px 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 15px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .toc-item:active, .toc-item:hover {
+      background: var(--accent-soft);
+    }
+    .toc-item.active {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Paste modal */
+    .paste-area {
+      width: 100%;
+      min-height: 180px;
+      border: 1.5px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 15px;
+      font-family: inherit;
+      background: var(--bg);
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+    }
+    .paste-area:focus {
+      border-color: var(--accent);
+    }
+
+    .panel-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(135deg, #a78bfa, #6366f1);
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+    .panel-btn:active {
+      opacity: 0.9;
+    }
+
+    /* TTS controls */
+    .tts-status {
+      font-size: 13px;
+      color: var(--text-secondary);
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    /* Loading */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      z-index: 200;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+    }
+    .loading-overlay.active {
+      display: flex;
+    }
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Hidden file input */
+    #fileInput {
+      display: none;
+    }
+
+    /* Progress toast */
+    .toast {
+      position: fixed;
+      bottom: calc(100px + var(--safe-bottom));
+      left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: var(--card);
+      color: var(--text);
+      padding: 12px 20px;
+      border-radius: 12px;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      opacity: 0;
+      transition: all 0.3s;
+      z-index: 150;
+      pointer-events: none;
+    }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+  </style>
+</head>
+<body>
+  <!-- Loading -->
+  <div class="loading-overlay" id="loading">
+    <div class="spinner"></div>
+    <div style="color:var(--text-secondary);font-size:14px;">파일을 불러오는 중...</div>
+  </div>
+
+  <!-- HOME SCREEN -->
+  <div class="screen active" id="home">
+    <div class="logo">
+      <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><path d="M8 7h8M8 11h8M8 15h5"/></svg>
+    </div>
+    <h1 class="app-name">Lumina</h1>
+    <p class="app-tagline">고요한 독서의 공간</p>
+    
+    <div class="home-actions">
+      <button class="home-btn primary" id="btnLibrary">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        서재
+      </button>
+      <button class="home-btn" id="btnPaste">
+        <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        텍스트 붙여넣기
+      </button>
+      <button class="home-btn" id="btnOpenFile">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+        파일 열기
+      </button>
+    </div>
+    
+    <p class="privacy-note">모든 파일은 기기에만 저장됩니다.<br>외부로 전송되지 않습니다.</p>
+  </div>
+
+  <!-- LIBRARY SCREEN -->
+  <div class="screen" id="library">
+    <div class="lib-header">
+      <button class="icon-btn" id="btnLibBack" title="홈">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+      <h2 class="lib-title">서재</h2>
+      <div class="lib-actions">
+        <button class="icon-btn" id="btnLibAdd" title="파일 추가">
+          <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        </button>
+      </div>
+    </div>
+    
+    <div class="lib-tabs">
+      <button class="lib-tab active" data-tab="reading">읽고 있는</button>
+      <button class="lib-tab" data-tab="finished">다 읽은</button>
+    </div>
+    
+    <div class="lib-list" id="libList">
+      <!-- books injected here -->
+    </div>
+  </div>
+
+  <!-- READER SCREEN -->
+  <div class="screen" id="reader">
+    <div class="reader-toolbar" id="readerToolbar">
+      <button class="icon-btn" id="btnReaderBack" title="뒤로">
+        <svg viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+      </button>
+      <div class="reader-title" id="readerTitle">제목</div>
+      <button class="icon-btn" id="btnToc" title="목차">
+        <svg viewBox="0 0 24 24"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+      </button>
+    </div>
+    
+    <div class="reader-content" id="readerContent">
+      <div class="content-inner" id="contentInner"></div>
+    </div>
+    
+    <div class="reader-bottom" id="readerBottom">
+      <button class="bottom-btn" id="btnSettings" title="설정">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </button>
+      <button class="bottom-btn" id="btnTTS" title="읽어주기">
+        <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+      </button>
+      <button class="bottom-btn" id="btnNight" title="나이트모드">
+        <svg viewBox="0 0 24 24" id="nightIcon"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="bottom-btn" id="btnMarkFinished" title="다 읽음">
+        <svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- SETTINGS PANEL -->
+  <div class="overlay" id="settingsOverlay">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">읽기 설정</div>
+        <button class="panel-close" data-close="settingsOverlay">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      
+      <div class="setting-group">
+        <div class="setting-label">글꼴</div>
+        <div class="font-options">
+          <button class="font-opt active" data-font="sans">고딕</button>
+          <button class="font-opt serif" data-font="serif">명조</button>
+        </div>
+      </div>
+      
+      <div class="setting-group">
+        <div class="setting-label">글자 크기</div>
+        <div class="slider-row">
+          <input type="range" id="fontSizeSlider" min="14" max="28" value="18" step="1">
+          <span class="slider-value" id="fontSizeVal">18</span>
+        </div>
+      </div>
+      
+      <div class="setting-group">
+        <div class="setting-label">자간</div>
+        <div class="slider-row">
+          <input type="range" id="letterSpacingSlider" min="-2" max="8" value="1" step="1">
+          <span class="slider-value" id="letterSpacingVal">1</span>
+        </div>
+      </div>
+      
+      <div class="setting-group">
+        <div class="setting-label">줄간격</div>
+        <div class="slider-row">
+          <input type="range" id="lineHeightSlider" min="140" max="240" value="185" step="5">
+          <span class="slider-value" id="lineHeightVal">1.85</span>
+        </div>
+      </div>
+      
+      <div class="setting-group">
+        <div class="toggle-row">
+          <span style="font-weight:600">나이트 모드</span>
+          <div class="toggle" id="nightToggle"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOC PANEL -->
+  <div class="overlay" id="tocOverlay">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">목차</div>
+        <button class="panel-close" data-close="tocOverlay">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <ul class="toc-list" id="tocList"></ul>
+    </div>
+  </div>
+
+  <!-- PASTE PANEL -->
+  <div class="overlay" id="pasteOverlay">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">텍스트 붙여넣기</div>
+        <button class="panel-close" data-close="pasteOverlay">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <textarea class="paste-area" id="pasteText" placeholder="여기에 텍스트를 붙여넣으세요..."></textarea>
+      <input type="text" id="pasteTitle" placeholder="제목 (선택)" style="width:100%;margin-top:12px;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;font-size:15px;outline:none;">
+      <button class="panel-btn" id="btnPasteConfirm">읽기 시작</button>
+    </div>
+  </div>
+
+  <!-- TTS PANEL -->
+  <div class="overlay" id="ttsOverlay">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">시스템 TTS</div>
+        <button class="panel-close" data-close="ttsOverlay">
+          <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">음성 선택</div>
+        <select id="voiceSelect" style="width:100%;padding:12px;border-radius:12px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;"></select>
+      </div>
+      <div class="setting-group">
+        <div class="setting-label">속도</div>
+        <div class="slider-row">
+          <input type="range" id="ttsRate" min="0.5" max="2" value="1" step="0.1">
+          <span class="slider-value" id="ttsRateVal">1.0</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="panel-btn" id="btnTTSPlay" style="flex:1;">재생</button>
+        <button class="panel-btn" id="btnTTSStop" style="flex:1;background:var(--bg-secondary);color:var(--text);">정지</button>
+      </div>
+      <div class="tts-status" id="ttsStatus">시스템 음성을 사용합니다</div>
+    </div>
+  </div>
+
+  <input type="file" id="fileInput" accept=".txt,.md,.html,.htm,.docx,.pdf,.epub">
+
+  <div class="toast" id="toast"></div>
+
+  <!-- External libs (CDN, cached by SW when possible) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/9.1.6/marked.min.js"></script>
+
+  <script>
+    // ========== CONFIG & STATE ==========
+    const APP = {
+      books: [],
+      currentBookId: null,
+      currentTab: 'reading',
+      settings: {
+        font: 'sans',
+        fontSize: 18,
+        letterSpacing: 1,
+        lineHeight: 1.85,
+        night: false
+      },
+      lastScrollY: 0,
+      toolbarVisible: true,
+      ttsUtterance: null,
+      isSpeaking: false
+    };
+
+    // ========== STORAGE ==========
+    const DB = {
+      KEY: 'lumina_books_v1',
+      SETTINGS: 'lumina_settings_v1',
+
+      load() {
+        try {
+          const raw = localStorage.getItem(this.KEY);
+          APP.books = raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          APP.books = [];
+        }
+        try {
+          const s = localStorage.getItem(this.SETTINGS);
+          if (s) Object.assign(APP.settings, JSON.parse(s));
+        } catch (e) {}
+        this.applySettings();
+      },
+
+      save() {
+        localStorage.setItem(this.KEY, JSON.stringify(APP.books));
+      },
+
+      saveSettings() {
+        localStorage.setItem(this.SETTINGS, JSON.stringify(APP.settings));
+        this.applySettings();
+      },
+
+      applySettings() {
+        const root = document.documentElement;
+        root.style.setProperty('--font-size', APP.settings.fontSize + 'px');
+        root.style.setProperty('--letter-spacing', (APP.settings.letterSpacing / 100) + 'em');
+        root.style.setProperty('--line-height', APP.settings.lineHeight);
+        document.body.dataset.theme = APP.settings.night ? 'night' : '';
+        const content = document.getElementById('contentInner');
+        if (content) {
+          content.classList.toggle('serif', APP.settings.font === 'serif');
+        }
+        // UI sync
+        document.getElementById('fontSizeSlider').value = APP.settings.fontSize;
+        document.getElementById('fontSizeVal').textContent = APP.settings.fontSize;
+        document.getElementById('letterSpacingSlider').value = APP.settings.letterSpacing;
+        document.getElementById('letterSpacingVal').textContent = APP.settings.letterSpacing;
+        document.getElementById('lineHeightSlider').value = Math.round(APP.settings.lineHeight * 100);
+        document.getElementById('lineHeightVal').textContent = APP.settings.lineHeight.toFixed(2);
+        document.getElementById('nightToggle').classList.toggle('on', APP.settings.night);
+        document.querySelectorAll('.font-opt').forEach(el => {
+          el.classList.toggle('active', el.dataset.font === APP.settings.font);
+        });
+      }
+    };
+
+    // ========== UTILITIES ==========
+    function showToast(msg, ms = 2200) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), ms);
+    }
+
+    function showLoading(show) {
+      document.getElementById('loading').classList.toggle('active', show);
+    }
+
+    function uid() {
+      return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    }
+
+    function formatDate(ts) {
+      const d = new Date(ts);
+      return `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    }
+
+    // Encoding detection & decode for Korean
+    async function decodeText(buffer) {
+      // Try UTF-8 first
+      try {
+        const dec = new TextDecoder('utf-8', { fatal: true });
+        return dec.decode(buffer);
+      } catch (e) {}
+      // Try EUC-KR / CP949
+      try {
+        const dec = new TextDecoder('euc-kr');
+        return dec.decode(buffer);
+      } catch (e) {}
+      // Fallback UTF-8 non-fatal
+      return new TextDecoder('utf-8').decode(buffer);
+    }
+
+    // ========== FILE PARSERS ==========
+    async function parseFile(file) {
+      const name = file.name;
+      const ext = name.split('.').pop().toLowerCase();
+      const buffer = await file.arrayBuffer();
+
+      let title = name.replace(/\.[^.]+$/, '');
+      let content = '';
+      let toc = [];
+
+      if (ext === 'txt' || ext === 'md') {
+        content = await decodeText(buffer);
+        if (ext === 'md' && typeof marked !== 'undefined') {
+          content = marked.parse(content);
+        } else {
+          content = plainToHtml(content);
+        }
+        toc = extractTocFromHtml(content) || generateArbitraryToc(content);
+      }
+      else if (ext === 'html' || ext === 'htm') {
+        content = await decodeText(buffer);
+        // strip scripts/styles roughly
+        content = content.replace(/<script[\s\S]*?<\/script>/gi, '')
+                         .replace(/<style[\s\S]*?<\/style>/gi, '');
+        toc = extractTocFromHtml(content) || generateArbitraryToc(content);
+      }
+      else if (ext === 'docx' && typeof mammoth !== 'undefined') {
+        const result = await mammoth.convertToHtml({ arrayBuffer: buffer });
+        content = result.value;
+        toc = extractTocFromHtml(content) || generateArbitraryToc(content);
+      }
+      else if (ext === 'pdf' && typeof pdfjsLib !== 'undefined') {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+        const pdf = await pdfjsLib.getDocument({ data: buffer }).promise;
+        let pages = [];
+        for (let i = 1; i <= pdf.numPages; i++) {
+          const page = await pdf.getPage(i);
+          const textContent = await page.getTextContent();
+          const pageText = textContent.items.map(it => it.str).join(' ');
+          pages.push(pageText);
+        }
+        content = plainToHtml(pages.join('\n\n'));
+        // PDF TOC: page based
+        toc = pages.map((_, i) => ({
+          id: 'pdf-page-' + (i + 1),
+          title: `페이지 ${i + 1}`,
+          level: 1
+        }));
+      }
+      else if (ext === 'epub' && typeof JSZip !== 'undefined') {
+        const zip = await JSZip.loadAsync(buffer);
+        // Find OPF
+        let opfPath = null;
+        const container = await zip.file('META-INF/container.xml')?.async('string');
+        if (container) {
+          const match = container.match(/full-path=["']([^"']+)["']/);
+          if (match) opfPath = match[1];
+        }
+        if (!opfPath) {
+          // fallback search
+          for (const path of Object.keys(zip.files)) {
+            if (path.endsWith('.opf')) { opfPath = path; break; }
+          }
+        }
+        if (!opfPath) throw new Error('EPUB 구조를 찾을 수 없습니다.');
+
+        const opfDir = opfPath.substring(0, opfPath.lastIndexOf('/') + 1);
+        const opfText = await zip.file(opfPath).async('string');
+        const parser = new DOMParser();
+        const opfDoc = parser.parseFromString(opfText, 'application/xml');
+
+        // Title
+        const titleEl = opfDoc.querySelector('metadata > title, dc\\:title, title');
+        if (titleEl) title = titleEl.textContent.trim() || title;
+
+        // Spine
+        const manifest = {};
+        opfDoc.querySelectorAll('manifest > item, item').forEach(item => {
+          const id = item.getAttribute('id');
+          const href = item.getAttribute('href');
+          if (id && href) manifest[id] = opfDir + href;
+        });
+
+        const spine = [];
+        opfDoc.querySelectorAll('spine > itemref, itemref').forEach(ref => {
+          const idref = ref.getAttribute('idref');
+          if (manifest[idref]) spine.push(manifest[idref]);
+        });
+
+        // TOC (NCX or NAV)
+        let ncxPath = null;
+        opfDoc.querySelectorAll('manifest > item, item').forEach(item => {
+          if (item.getAttribute('media-type') === 'application/x-dtbncx+xml') {
+            ncxPath = opfDir + item.getAttribute('href');
+          }
+        });
+        if (ncxPath && zip.file(ncxPath)) {
+          const ncxText = await zip.file(ncxPath).async('string');
+          const ncxDoc = parser.parseFromString(ncxText, 'application/xml');
+          ncxDoc.querySelectorAll('navPoint').forEach((np, idx) => {
+            const label = np.querySelector('navLabel > text, text')?.textContent?.trim();
+            if (label) toc.push({ id: 'epub-ch-' + idx, title: label, level: 1 });
+          });
+        }
+
+        // Extract content
+        let htmlParts = [];
+        for (let i = 0; i < spine.length; i++) {
+          const path = spine[i];
+          const file = zip.file(path);
+          if (!file) continue;
+          let chapterHtml = await file.async('string');
+          // Basic cleanup
+          chapterHtml = chapterHtml.replace(/<script[\s\S]*?<\/script>/gi, '')
+                                   .replace(/<style[\s\S]*?<\/style>/gi, '')
+                                   .replace(/<link[^>]*>/gi, '');
+          // Relative images ignored for simplicity
+          htmlParts.push(`<div class="epub-chapter" id="epub-ch-${i}">${chapterHtml}</div>`);
+          if (!toc.length) {
+            // try extract heading
+            const tmp = parser.parseFromString(chapterHtml, 'text/html');
+            const h = tmp.querySelector('h1, h2, title');
+            toc.push({
+              id: 'epub-ch-' + i,
+              title: h ? h.textContent.trim().slice(0, 60) : `챕터 ${i + 1}`,
+              level: 1
+            });
+          }
+        }
+        content = htmlParts.join('\n');
+        if (!toc.length) toc = generateArbitraryToc(content);
+      }
+      else {
+        // fallback as text
+        content = plainToHtml(await decodeText(buffer));
+        toc = generateArbitraryToc(content);
+      }
+
+      // Final polish: dialogue emphasis
+      content = enhanceDialogue(content);
+      content = enhanceTitles(content);
+
+      return { title, content, toc, type: ext };
+    }
+
+    function plainToHtml(text) {
+      // Split paragraphs, detect chapters
+      const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
+      let html = '';
+      let para = [];
+      const chapterRe = /^(제\s*\d+\s*[장화편부절]|Chapter\s+\d+|CHAPTER\s+\d+|【.+】|≪.+≫|\d+\s*\.\s*[가-힣A-Za-z])/i;
+
+      for (let line of lines) {
+        const trimmed = line.trim();
+        if (!trimmed) {
+          if (para.length) {
+            html += '<p>' + escapeHtml(para.join(' ')) + '</p>';
+            para = [];
+          }
+          continue;
+        }
+        if (chapterRe.test(trimmed) && trimmed.length < 80) {
+          if (para.length) {
+            html += '<p>' + escapeHtml(para.join(' ')) + '</p>';
+            para = [];
+          }
+          html += `<h2 id="ch-${uid()}">${escapeHtml(trimmed)}</h2>`;
+        } else {
+          para.push(trimmed);
+        }
+      }
+      if (para.length) html += '<p>' + escapeHtml(para.join(' ')) + '</p>';
+      return html;
+    }
+
+    function escapeHtml(s) {
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function enhanceDialogue(html) {
+      // Korean dialogue patterns: “ ... ”, 「 ... 」, '...'
+      return html.replace(/(<p>)([“「『"].*?[”」』"]|[''].*?[''])(<\/p>)/gs, (m, open, text, close) => {
+        return `<blockquote><p>${text}</p></blockquote>`;
+      }).replace(/(<p>)([^<]*?[“「『][^<]*?[”」』][^<]*)(<\/p>)/g, (m, open, text, close) => {
+        // if paragraph contains dialogue, leave or wrap if pure
+        if (/^[“「『'"]/.test(text.trim()) && /[”」』'"]$/.test(text.trim())) {
+          return `<blockquote><p>${text}</p></blockquote>`;
+        }
+        return m;
+      });
+    }
+
+    function enhanceTitles(html) {
+      // already handled in plainToHtml mostly
+      return html;
+    }
+
+    function extractTocFromHtml(html) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+      const headings = doc.querySelectorAll('h1, h2, h3');
+      if (headings.length < 1) return null;
+      const toc = [];
+      headings.forEach((h, i) => {
+        const id = h.id || 'toc-' + i;
+        if (!h.id) h.id = id;
+        toc.push({
+          id,
+          title: h.textContent.trim().slice(0, 80) || `섹션 ${i + 1}`,
+          level: parseInt(h.tagName[1])
+        });
+      });
+      // write back ids if needed - but since we use string, re-extract later
+      return toc.length ? toc : null;
+    }
+
+    function generateArbitraryToc(html) {
+      // Split roughly by length into pseudo chapters
+      const textLen = html.replace(/<[^>]+>/g, '').length;
+      if (textLen < 3000) {
+        return [{ id: 'start', title: '본문', level: 1 }];
+      }
+      const parser = new DOMParser();
+      const doc = parser.parseFromString('<div id="root">' + html + '</div>', 'text/html');
+      const root = doc.getElementById('root');
+      const children = Array.from(root.children);
+      const toc = [];
+      const chunkSize = Math.max(5, Math.ceil(children.length / 8));
+      for (let i = 0; i < children.length; i += chunkSize) {
+        const id = 'arb-' + i;
+        children[i].id = id;
+        const preview = children[i].textContent.trim().slice(0, 40) || `구간 ${Math.floor(i / chunkSize) + 1}`;
+        toc.push({ id, title: preview + (preview.length >= 40 ? '…' : ''), level: 1 });
+      }
+      // reconstruct
+      return toc;
+    }
+
+    // For arbitrary we need to inject ids into content string
+    function injectArbitraryIds(html, toc) {
+      // simple: already done in generate if using DOM, but for string we re-parse
+      return html;
+    }
+
+    // ========== BOOK MANAGEMENT ==========
+    function addBook(data) {
+      const book = {
+        id: uid(),
+        title: data.title,
+        content: data.content,
+        toc: data.toc || [],
+        type: data.type || 'txt',
+        progress: 0,
+        scrollTop: 0,
+        finished: false,
+        addedAt: Date.now(),
+        lastRead: Date.now()
+      };
+      APP.books.unshift(book);
+      DB.save();
+      return book;
+    }
+
+    function updateBookProgress(id, scrollTop, progress) {
+      const book = APP.books.find(b => b.id === id);
+      if (!book) return;
+      book.scrollTop = scrollTop;
+      book.progress = progress;
+      book.lastRead = Date.now();
+      if (progress > 0.95) book.finished = true;
+      DB.save();
+    }
+
+    function deleteBook(id) {
+      APP.books = APP.books.filter(b => b.id !== id);
+      DB.save();
+      renderLibrary();
+      showToast('삭제되었습니다');
+    }
+
+    function markFinished(id) {
+      const book = APP.books.find(b => b.id === id);
+      if (book) {
+        book.finished = true;
+        book.progress = 1;
+        DB.save();
+        showToast('다 읽은 목록으로 이동했습니다');
+      }
+    }
+
+    // ========== RENDER ==========
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if (id === 'library') renderLibrary();
+    }
+
+    function renderLibrary() {
+      const list = document.getElementById('libList');
+      const filtered = APP.books.filter(b => 
+        APP.currentTab === 'reading' ? !b.finished : b.finished
+      );
+
+      if (!filtered.length) {
+        list.innerHTML = `
+          <div class="empty-state">
+            <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <p>${APP.currentTab === 'reading' ? '읽고 있는 책이 없습니다' : '다 읽은 책이 없습니다'}</p>
+            <p style="font-size:13px;margin-top:8px;opacity:0.7">파일을 열어 서재에 추가하세요</p>
+          </div>`;
+        return;
+      }
+
+      list.innerHTML = filtered.map(b => `
+        <div class="book-card" data-id="${b.id}">
+          <div class="book-cover">📖</div>
+          <div class="book-info">
+            <div class="book-title">${escapeHtml(b.title)}</div>
+            <div class="book-meta">${formatDate(b.lastRead)} · ${Math.round(b.progress * 100)}%</div>
+            <div class="progress-bar"><div class="progress-fill" style="width:${b.progress * 100}%"></div></div>
+          </div>
+          <button class="book-delete" data-delete="${b.id}" title="삭제">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      `).join('');
+
+      // events
+      list.querySelectorAll('.book-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+          if (e.target.closest('.book-delete')) return;
+          openBook(card.dataset.id);
+        });
+      });
+      list.querySelectorAll('.book-delete').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (confirm('이 책을 서재에서 삭제할까요?')) {
+            deleteBook(btn.dataset.delete);
+          }
+        });
+      });
+    }
+
+    function openBook(id) {
+      const book = APP.books.find(b => b.id === id);
+      if (!book) return;
+      APP.currentBookId = id;
+      document.getElementById('readerTitle').textContent = book.title;
+      
+      // Ensure TOC ids exist in content
+      let content = book.content;
+      if (book.toc && book.toc.length) {
+        // Make sure headings have matching ids where possible
+        const parser = new DOMParser();
+        const doc = parser.parseFromString('<div id="c">' + content + '</div>', 'text/html');
+        const root = doc.getElementById('c');
+        book.toc.forEach((t, i) => {
+          if (!root.querySelector('#' + CSS.escape(t.id))) {
+            // try find by text
+            const headings = root.querySelectorAll('h1,h2,h3,.epub-chapter');
+            if (headings[i]) headings[i].id = t.id;
+          }
+        });
+        content = root.innerHTML;
+      }
+
+      document.getElementById('contentInner').innerHTML = content;
+      document.getElementById('contentInner').classList.toggle('serif', APP.settings.font === 'serif');
+
+      // restore scroll
+      const scroller = document.getElementById('readerContent');
+      setTimeout(() => {
+        scroller.scrollTop = book.scrollTop || 0;
+      }, 50);
+
+      showScreen('reader');
+      renderToc(book);
+    }
+
+    function renderToc(book) {
+      const list = document.getElementById('tocList');
+      if (!book.toc || !book.toc.length) {
+        list.innerHTML = '<li class="toc-item">목차가 없습니다</li>';
+        return;
+      }
+      list.innerHTML = book.toc.map(t => `
+        <li class="toc-item" data-id="${t.id}" style="padding-left:${12 + (t.level-1)*16}px">${escapeHtml(t.title)}</li>
+      `).join('');
+
+      list.querySelectorAll('.toc-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const el = document.getElementById(item.dataset.id);
+          if (el) {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+          closeOverlay('tocOverlay');
+        });
+      });
+    }
+
+    // ========== SCROLL & TOOLBAR AUTO-HIDE ==========
+    function setupScrollHide() {
+      const scroller = document.getElementById('readerContent');
+      let lastY = 0;
+      let ticking = false;
+
+      scroller.addEventListener('scroll', () => {
+        if (!ticking) {
+          requestAnimationFrame(() => {
+            const y = scroller.scrollTop;
+            const toolbar = document.getElementById('readerToolbar');
+            const bottom = document.getElementById('readerBottom');
+
+            if (y > lastY + 8 && y > 60) {
+              // scrolling down -> hide
+              toolbar.classList.add('hidden');
+              bottom.classList.add('hidden');
+              APP.toolbarVisible = false;
+            } else if (y < lastY - 4) {
+              // scrolling up -> show
+              toolbar.classList.remove('hidden');
+              bottom.classList.remove('hidden');
+              APP.toolbarVisible = true;
+            }
+            lastY = y;
+
+            // save progress
+            if (APP.currentBookId) {
+              const max = scroller.scrollHeight - scroller.clientHeight;
+              const prog = max > 0 ? Math.min(1, y / max) : 0;
+              updateBookProgress(APP.currentBookId, y, prog);
+            }
+            ticking = false;
+          });
+          ticking = true;
+        }
+      }, { passive: true });
+    }
+
+    // ========== TTS (System) ==========
+    function populateVoices() {
+      const select = document.getElementById('voiceSelect');
+      const voices = speechSynthesis.getVoices();
+      select.innerHTML = '';
+      // Prefer Korean
+      const sorted = [...voices].sort((a, b) => {
+        const aKo = a.lang.startsWith('ko') ? 0 : 1;
+        const bKo = b.lang.startsWith('ko') ? 0 : 1;
+        return aKo - bKo;
+      });
+      sorted.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = `${v.name} (${v.lang})`;
+        select.appendChild(opt);
+      });
+      if (!voices.length) {
+        select.innerHTML = '<option>사용 가능한 음성 없음</option>';
+      }
+    }
+
+    function startTTS() {
+      if (APP.isSpeaking) {
+        speechSynthesis.cancel();
+        APP.isSpeaking = false;
+        document.getElementById('ttsStatus').textContent = '정지됨';
+        return;
+      }
+      const content = document.getElementById('contentInner');
+      const text = content.innerText || content.textContent;
+      if (!text.trim()) {
+        showToast('읽을 내용이 없습니다');
+        return;
+      }
+
+      const utter = new SpeechSynthesisUtterance(text.slice(0, 15000)); // limit
+      const voiceName = document.getElementById('voiceSelect').value;
+      const voices = speechSynthesis.getVoices();
+      const voice = voices.find(v => v.name === voiceName);
+      if (voice) utter.voice = voice;
+      utter.rate = parseFloat(document.getElementById('ttsRate').value) || 1;
+      utter.lang = voice ? voice.lang : 'ko-KR';
+
+      utter.onend = () => {
+        APP.isSpeaking = false;
+        document.getElementById('ttsStatus').textContent = '완료';
+      };
+      utter.onerror = () => {
+        APP.isSpeaking = false;
+        document.getElementById('ttsStatus').textContent = '오류 발생';
+      };
+
+      speechSynthesis.speak(utter);
+      APP.ttsUtterance = utter;
+      APP.isSpeaking = true;
+      document.getElementById('ttsStatus').textContent = '읽는 중...';
+    }
+
+    // ========== EVENT BINDINGS ==========
+    function bindEvents() {
+      // Home
+      document.getElementById('btnLibrary').addEventListener('click', () => showScreen('library'));
+      document.getElementById('btnPaste').addEventListener('click', () => {
+        document.getElementById('pasteOverlay').classList.add('active');
+      });
+      document.getElementById('btnOpenFile').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+      });
+
+      // Library
+      document.getElementById('btnLibBack').addEventListener('click', () => showScreen('home'));
+      document.getElementById('btnLibAdd').addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+      });
+      document.querySelectorAll('.lib-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.lib-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          APP.currentTab = tab.dataset.tab;
+          renderLibrary();
+        });
+      });
+
+      // Reader
+      document.getElementById('btnReaderBack').addEventListener('click', () => {
+        speechSynthesis.cancel();
+        APP.isSpeaking = false;
+        showScreen('library');
+      });
+      document.getElementById('btnToc').addEventListener('click', () => {
+        document.getElementById('tocOverlay').classList.add('active');
+      });
+      document.getElementById('btnSettings').addEventListener('click', () => {
+        document.getElementById('settingsOverlay').classList.add('active');
+      });
+      document.getElementById('btnTTS').addEventListener('click', () => {
+        populateVoices();
+        document.getElementById('ttsOverlay').classList.add('active');
+      });
+      document.getElementById('btnNight').addEventListener('click', () => {
+        APP.settings.night = !APP.settings.night;
+        DB.saveSettings();
+      });
+      document.getElementById('btnMarkFinished').addEventListener('click', () => {
+        if (APP.currentBookId) {
+          markFinished(APP.currentBookId);
+          showScreen('library');
+        }
+      });
+
+      // Overlays close
+      document.querySelectorAll('[data-close]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          closeOverlay(btn.dataset.close);
+        });
+      });
+      document.querySelectorAll('.overlay').forEach(ov => {
+        ov.addEventListener('click', (e) => {
+          if (e.target === ov) ov.classList.remove('active');
+        });
+      });
+
+      // Settings
+      document.querySelectorAll('.font-opt').forEach(btn => {
+        btn.addEventListener('click', () => {
+          APP.settings.font = btn.dataset.font;
+          DB.saveSettings();
+        });
+      });
+      document.getElementById('fontSizeSlider').addEventListener('input', (e) => {
+        APP.settings.fontSize = parseInt(e.target.value);
+        document.getElementById('fontSizeVal').textContent = e.target.value;
+        DB.saveSettings();
+      });
+      document.getElementById('letterSpacingSlider').addEventListener('input', (e) => {
+        APP.settings.letterSpacing = parseInt(e.target.value);
+        document.getElementById('letterSpacingVal').textContent = e.target.value;
+        DB.saveSettings();
+      });
+      document.getElementById('lineHeightSlider').addEventListener('input', (e) => {
+        APP.settings.lineHeight = parseInt(e.target.value) / 100;
+        document.getElementById('lineHeightVal').textContent = APP.settings.lineHeight.toFixed(2);
+        DB.saveSettings();
+      });
+      document.getElementById('nightToggle').addEventListener('click', () => {
+        APP.settings.night = !APP.settings.night;
+        DB.saveSettings();
+      });
+
+      // Paste
+      document.getElementById('btnPasteConfirm').addEventListener('click', () => {
+        const text = document.getElementById('pasteText').value.trim();
+        if (!text) {
+          showToast('텍스트를 입력하세요');
+          return;
+        }
+        const title = document.getElementById('pasteTitle').value.trim() || '붙여넣은 텍스트';
+        const content = plainToHtml(text);
+        const toc = extractTocFromHtml(content) || generateArbitraryToc(content);
+        const book = addBook({ title, content: enhanceDialogue(content), toc, type: 'txt' });
+        closeOverlay('pasteOverlay');
+        document.getElementById('pasteText').value = '';
+        document.getElementById('pasteTitle').value = '';
+        openBook(book.id);
+      });
+
+      // File
+      document.getElementById('fileInput').addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+        showLoading(true);
+        try {
+          const data = await parseFile(file);
+          const book = addBook(data);
+          showLoading(false);
+          openBook(book.id);
+          showToast(`"${book.title}" 추가됨`);
+        } catch (err) {
+          console.error(err);
+          showLoading(false);
+          showToast('파일을 열 수 없습니다: ' + (err.message || '오류'));
+        }
+        e.target.value = '';
+      });
+
+      // TTS
+      document.getElementById('btnTTSPlay').addEventListener('click', startTTS);
+      document.getElementById('btnTTSStop').addEventListener('click', () => {
+        speechSynthesis.cancel();
+        APP.isSpeaking = false;
+        document.getElementById('ttsStatus').textContent = '정지됨';
+      });
+      document.getElementById('ttsRate').addEventListener('input', (e) => {
+        document.getElementById('ttsRateVal').textContent = parseFloat(e.target.value).toFixed(1);
+      });
+
+      if (speechSynthesis.onvoiceschanged !== undefined) {
+        speechSynthesis.onvoiceschanged = populateVoices;
+      }
+    }
+
+    function closeOverlay(id) {
+      document.getElementById(id).classList.remove('active');
+    }
+
+    // ========== PWA SERVICE WORKER ==========
+    function registerSW() {
+      if (!('serviceWorker' in navigator)) return;
+      const swCode = `
+        const CACHE = 'lumina-v1';
+        const ASSETS = ['./', './index.html'];
+        self.addEventListener('install', e => {
+          e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));
+        });
+        self.addEventListener('activate', e => {
+          e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+        });
+        self.addEventListener('fetch', e => {
+          e.respondWith(
+            caches.match(e.request).then(r => r || fetch(e.request).then(res => {
+              if (e.request.url.startsWith('http') && res.ok) {
+                const clone = res.clone();
+                caches.open(CACHE).then(c => c.put(e.request, clone));
+              }
+              return res;
+            }).catch(() => caches.match('./index.html')))
+          );
+        });
+      `;
+      const blob = new Blob([swCode], { type: 'application/javascript' });
+      const url = URL.createObjectURL(blob);
+      navigator.serviceWorker.register(url).catch(err => console.log('SW reg failed', err));
+    }
+
+    // ========== INIT ==========
+    DB.load();
+    bindEvents();
+    setupScrollHide();
+    registerSW();
+    // Initial theme
+    DB.applySettings();
+  </script>
+</body>
+</html>
