@@ -1188,25 +1188,30 @@
       let toc = [];
 
       if (ext === 'txt' || ext === 'md') {
-        content = await decodeText(buffer);
+        let raw = await decodeText(buffer);
         if (ext === 'md' && typeof marked !== 'undefined') {
-          content = marked.parse(content);
+          const built = buildContentAndToc(marked.parse(raw), false);
+          content = built.content;
+          toc = built.toc;
         } else {
-          content = plainToHtml(content);
+          const built = buildContentAndToc(raw, true);
+          content = built.content;
+          toc = built.toc;
         }
-        toc = extractTocFromHtml(content) || generateArbitraryToc(content);
       }
       else if (ext === 'html' || ext === 'htm') {
-        content = await decodeText(buffer);
-        // strip scripts/styles roughly
-        content = content.replace(/<script[\s\S]*?<\/script>/gi, '')
-                         .replace(/<style[\s\S]*?<\/style>/gi, '');
-        toc = extractTocFromHtml(content) || generateArbitraryToc(content);
+        let raw = await decodeText(buffer);
+        raw = raw.replace(/<script[\s\S]*?<\/script>/gi, '')
+                 .replace(/<style[\s\S]*?<\/style>/gi, '');
+        const built = buildContentAndToc(raw, false);
+        content = built.content;
+        toc = built.toc;
       }
       else if (ext === 'docx' && typeof mammoth !== 'undefined') {
         const result = await mammoth.convertToHtml({ arrayBuffer: buffer });
-        content = result.value;
-        toc = extractTocFromHtml(content) || generateArbitraryToc(content);
+        const built = buildContentAndToc(result.value, false);
+        content = built.content;
+        toc = built.toc;
       }
       else if (ext === 'pdf' && typeof pdfjsLib !== 'undefined') {
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
@@ -1218,13 +1223,26 @@
           const pageText = textContent.items.map(it => it.str).join(' ');
           pages.push(pageText);
         }
-        content = plainToHtml(pages.join('\n\n'));
-        // PDF TOC: page based
-        toc = pages.map((_, i) => ({
-          id: 'pdf-page-' + (i + 1),
-          title: `페이지 ${i + 1}`,
-          level: 1
-        }));
+        // PDF도 챕터 패턴 감지 시도 후, 부족하면 페이지 단위 목차
+        const built = buildContentAndToc(pages.join('\n\n'), true);
+        content = built.content;
+        if (built.toc && built.toc.length >= 2 && !built.toc[0].id.startsWith('arb-') && built.toc[0].title !== '본문') {
+          toc = built.toc;
+        } else {
+          // 페이지 기반 목차 + id 주입
+          const parser = new DOMParser();
+          const doc = parser.parseFromString('<div id="root">' + content + '</div>', 'text/html');
+          const root = doc.getElementById('root');
+          const children = Array.from(root.children);
+          toc = [];
+          const step = Math.max(1, Math.ceil(children.length / Math.min(pages.length, 30)));
+          for (let i = 0, p = 0; i < children.length && p < pages.length; i += step, p++) {
+            const id = 'pdf-page-' + (p + 1);
+            if (children[i]) children[i].id = id;
+            toc.push({ id, title: `페이지 ${p + 1}`, level: 1 });
+          }
+          content = root.innerHTML;
+        }
       }
       else if (ext === 'epub' && typeof JSZip !== 'undefined') {
         const zip = await JSZip.loadAsync(buffer);
@@ -1307,48 +1325,112 @@
           }
         }
         content = htmlParts.join('\n');
-        if (!toc.length) toc = generateArbitraryToc(content);
+        if (!toc.length) {
+          const built = buildContentAndToc(content, false);
+          content = built.content;
+          toc = built.toc;
+        } else {
+          // NCX 목차가 있어도 본문 안 챕터 승격 + 대화 강조
+          content = promoteChapterParagraphs(content);
+          content = enhanceDialogue(content);
+        }
       }
       else {
         // fallback as text
-        content = plainToHtml(await decodeText(buffer));
-        toc = generateArbitraryToc(content);
+        const built = buildContentAndToc(await decodeText(buffer), true);
+        content = built.content;
+        toc = built.toc;
       }
-
-      // Final polish: dialogue emphasis
-      content = enhanceDialogue(content);
-      content = enhanceTitles(content);
 
       return { title, content, toc, type: ext };
     }
 
+    // ========== 한글 소설/문서 챕터 감지 (대폭 강화) ==========
+    function isChapterLine(text) {
+      if (!text) return false;
+      const t = text.trim();
+      if (t.length === 0 || t.length > 100) return false;
+
+      // 1) 제N장/화/편/부/절/막/권/회 (공백·숫자 변형 모두)
+      if (/^제\s*[0-9０-９일이삼사오육륙칠팔구십백천만]+\s*[장화편부절막권회]/.test(t)) return true;
+      if (/^제\s*\d+\s*[장화편부절막권회]/.test(t)) return true;
+
+      // 2) N장 / N화 / N편 등 (앞에 기호 허용)
+      if (/^[【\[\(〈《「『≪〈\<\-\*\★●◆■□▶▷※]*\s*\d+\s*[장화편부절막권회]/.test(t)) return true;
+      if (/^\d+\s*[\.．、]\s*[장화편부절막권회]/.test(t)) return true;
+
+      // 3) 숫자 + 점/콜론 + 제목 (1. 시작, 01. 프롤로그, 1: 제목)
+      if (/^\d{1,3}\s*[\.．:：]\s*.{1,60}$/.test(t) && !/^\d+\s*[\.．:：]\s*\d+/.test(t)) return true;
+
+      // 4) 괄호/대괄호/특수기호로 감싼 챕터
+      if (/^[【\[\(〈《「『≪].{1,50}[】\]\)〉》」』≫]$/.test(t)) return true;
+      if (/^[≪〈《].+[≫〉》]$/.test(t)) return true;
+
+      // 5) 영문 Chapter / Episode / Part / Volume / Act
+      if (/^(Chapter|CHAPTER|Ch\.?|Episode|EP\.?|Part|PART|Volume|Vol\.?|Act|Scene)\s*[\dIVXLCivxlc]+/i.test(t)) return true;
+
+      // 6) 프롤로그 / 에필로그 / 서장 / 종장 / 서문 / 후기 / 발문 / 서사 / 중간 / 막간
+      if (/^(프롤로그|에필로그|프롤로그|서장|종장|서문|후기|발문|머리말|맺음말|서사|중간|막간|인터미션|보너스|외전|번외|특별편|프롤로그\s*\d*|에필로그\s*\d*)/i.test(t)) return true;
+
+      // 7) 첫째/둘째/... 마당/장/화
+      if (/^(첫\s*째|둘\s*째|셋\s*째|넷\s*째|다섯\s*째|여섯\s*째|일곱\s*째|여덟\s*째|아홉\s*째|열\s*째)\s*[마당장화편부]/.test(t)) return true;
+
+      // 8) 한자 제N장 스타일
+      if (/^第\s*[0-9一二三四五六七八九十百千]+\s*[章話編部節幕卷回]/.test(t)) return true;
+
+      // 9) 순수 숫자만 (1, 2, 01, 02...) + 짧은 경우 (앞뒤 빈 줄 맥락은 호출측에서)
+      if (/^\d{1,3}$/.test(t)) return true;
+
+      // 10) ★ ● ■ 등으로 감싸거나 시작하는 짧은 제목성 줄
+      if (/^[★☆●○◆◇■□▶▷※◎]/.test(t) && t.length < 50) return true;
+
+      // 11) "에피소드 N", "EP N", "화수 N"
+      if (/^(에피소드|에피소우드|Episode|EP)\s*\.?\s*\d+/i.test(t)) return true;
+
+      // 12) 숫자 + 공백 + 한글제목 (짧은 경우) 예: "1 시작", "12 결말"
+      if (/^\d{1,3}\s+[가-힣A-Za-z].{0,40}$/.test(t) && t.length < 50) return true;
+
+      return false;
+    }
+
     function plainToHtml(text) {
-      // Split paragraphs, detect chapters
       const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
       let html = '';
       let para = [];
-      const chapterRe = /^(제\s*\d+\s*[장화편부절]|Chapter\s+\d+|CHAPTER\s+\d+|【.+】|≪.+≫|\d+\s*\.\s*[가-힣A-Za-z])/i;
+      let chapterCount = 0;
 
-      for (let line of lines) {
-        const trimmed = line.trim();
+      const flushPara = () => {
+        if (para.length) {
+          const joined = para.join(' ').trim();
+          if (joined) html += '<p>' + escapeHtml(joined) + '</p>\n';
+          para = [];
+        }
+      };
+
+      for (let i = 0; i < lines.length; i++) {
+        const trimmed = lines[i].trim();
         if (!trimmed) {
-          if (para.length) {
-            html += '<p>' + escapeHtml(para.join(' ')) + '</p>';
-            para = [];
-          }
+          flushPara();
           continue;
         }
-        if (chapterRe.test(trimmed) && trimmed.length < 80) {
-          if (para.length) {
-            html += '<p>' + escapeHtml(para.join(' ')) + '</p>';
-            para = [];
-          }
-          html += `<h2 id="ch-${uid()}">${escapeHtml(trimmed)}</h2>`;
+
+        // 짧은 줄 + 챕터 패턴이면 제목으로 승격
+        // 앞/뒤가 빈 줄이거나 문서 시작/끝인 경우 신뢰도 상승
+        const prevEmpty = i === 0 || !lines[i - 1].trim();
+        const nextEmpty = i === lines.length - 1 || !lines[i + 1].trim();
+        const isShort = trimmed.length <= 80;
+        const looksChapter = isChapterLine(trimmed);
+
+        if (isShort && looksChapter && (prevEmpty || nextEmpty || chapterCount > 0)) {
+          flushPara();
+          chapterCount++;
+          const id = 'ch-' + chapterCount;
+          html += `<h2 id="${id}">${escapeHtml(trimmed)}</h2>\n`;
         } else {
           para.push(trimmed);
         }
       }
-      if (para.length) html += '<p>' + escapeHtml(para.join(' ')) + '</p>';
+      flushPara();
       return html;
     }
 
@@ -1357,68 +1439,111 @@
     }
 
     function enhanceDialogue(html) {
-      // Korean dialogue patterns: “ ... ”, 「 ... 」, '...'
-      return html.replace(/(<p>)([“「『"].*?[”」』"]|[''].*?[''])(<\/p>)/gs, (m, open, text, close) => {
-        return `<blockquote><p>${text}</p></blockquote>`;
-      }).replace(/(<p>)([^<]*?[“「『][^<]*?[”」』][^<]*)(<\/p>)/g, (m, open, text, close) => {
-        // if paragraph contains dialogue, leave or wrap if pure
-        if (/^[“「『'"]/.test(text.trim()) && /[”」』'"]$/.test(text.trim())) {
+      return html
+        .replace(/(<p>)([“「『"].*?[”」』"]|[''].*?[''])(<\/p>)/gs, (m, open, text) => {
           return `<blockquote><p>${text}</p></blockquote>`;
-        }
-        return m;
-      });
+        })
+        .replace(/(<p>)([^<]*?[“「『][^<]*?[”」』][^<]*)(<\/p>)/g, (m, open, text) => {
+          if (/^[“「『'"]/.test(text.trim()) && /[”」』'"]$/.test(text.trim())) {
+            return `<blockquote><p>${text}</p></blockquote>`;
+          }
+          return m;
+        });
     }
 
-    function enhanceTitles(html) {
-      // already handled in plainToHtml mostly
-      return html;
+    // HTML 안에서도 <p>로 남은 챕터성 줄을 h2로 승격
+    function promoteChapterParagraphs(html) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString('<div id="root">' + html + '</div>', 'text/html');
+      const root = doc.getElementById('root');
+      let count = root.querySelectorAll('h1,h2,h3').length;
+
+      Array.from(root.querySelectorAll('p')).forEach(p => {
+        const text = (p.textContent || '').trim();
+        if (text.length > 0 && text.length <= 90 && isChapterLine(text)) {
+          // 주변에 이미 헤딩이 너무 많으면 스킵하지 않음 – 일단 승격
+          const h = doc.createElement('h2');
+          count++;
+          h.id = 'ch-' + count;
+          h.textContent = text;
+          p.parentNode.replaceChild(h, p);
+        }
+      });
+
+      return root.innerHTML;
     }
 
     function extractTocFromHtml(html) {
       const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-      const headings = doc.querySelectorAll('h1, h2, h3');
-      if (headings.length < 1) return null;
+      const doc = parser.parseFromString('<div id="root">' + html + '</div>', 'text/html');
+      const root = doc.getElementById('root');
+      const headings = root.querySelectorAll('h1, h2, h3');
+      if (headings.length < 1) return { toc: null, html };
+
       const toc = [];
       headings.forEach((h, i) => {
-        const id = h.id || 'toc-' + i;
-        if (!h.id) h.id = id;
+        let id = h.id;
+        if (!id) {
+          id = 'toc-' + i;
+          h.id = id;
+        }
+        const title = h.textContent.trim().slice(0, 80) || `섹션 ${i + 1}`;
         toc.push({
           id,
-          title: h.textContent.trim().slice(0, 80) || `섹션 ${i + 1}`,
-          level: parseInt(h.tagName[1])
+          title,
+          level: parseInt(h.tagName[1], 10) || 2
         });
       });
-      // write back ids if needed - but since we use string, re-extract later
-      return toc.length ? toc : null;
+      return { toc: toc.length ? toc : null, html: root.innerHTML };
     }
 
     function generateArbitraryToc(html) {
-      // Split roughly by length into pseudo chapters
       const textLen = html.replace(/<[^>]+>/g, '').length;
-      if (textLen < 3000) {
-        return [{ id: 'start', title: '본문', level: 1 }];
-      }
       const parser = new DOMParser();
       const doc = parser.parseFromString('<div id="root">' + html + '</div>', 'text/html');
       const root = doc.getElementById('root');
-      const children = Array.from(root.children);
+      const children = Array.from(root.children).filter(el => el.tagName !== 'SCRIPT');
+
+      if (textLen < 2500 || children.length < 6) {
+        if (children[0] && !children[0].id) children[0].id = 'start';
+        return {
+          toc: [{ id: children[0]?.id || 'start', title: '본문', level: 1 }],
+          html: root.innerHTML
+        };
+      }
+
+      // 대략 8~15개 구간으로 나눔
+      const targetChunks = Math.min(15, Math.max(6, Math.ceil(textLen / 4000)));
+      const chunkSize = Math.max(3, Math.ceil(children.length / targetChunks));
       const toc = [];
-      const chunkSize = Math.max(5, Math.ceil(children.length / 8));
+
       for (let i = 0; i < children.length; i += chunkSize) {
         const id = 'arb-' + i;
         children[i].id = id;
-        const preview = children[i].textContent.trim().slice(0, 40) || `구간 ${Math.floor(i / chunkSize) + 1}`;
-        toc.push({ id, title: preview + (preview.length >= 40 ? '…' : ''), level: 1 });
+        let preview = (children[i].textContent || '').trim().replace(/\s+/g, ' ').slice(0, 36);
+        if (!preview) preview = `구간 ${Math.floor(i / chunkSize) + 1}`;
+        if (preview.length >= 36) preview += '…';
+        toc.push({ id, title: preview, level: 1 });
       }
-      // reconstruct
-      return toc;
+      return { toc, html: root.innerHTML };
     }
 
-    // For arbitrary we need to inject ids into content string
-    function injectArbitraryIds(html, toc) {
-      // simple: already done in generate if using DOM, but for string we re-parse
-      return html;
+    // 통합: 콘텐츠 + 목차 생성 (항상 id가 본문에 존재하도록)
+    function buildContentAndToc(rawHtmlOrText, isPlainText) {
+      let content = isPlainText ? plainToHtml(rawHtmlOrText) : rawHtmlOrText;
+      content = promoteChapterParagraphs(content);
+      content = enhanceDialogue(content);
+
+      let { toc, html } = extractTocFromHtml(content);
+      content = html;
+
+      if (!toc || toc.length < 2) {
+        // 헤딩이 거의 없으면 임의 목차 생성 (본문에 id 주입)
+        const arb = generateArbitraryToc(content);
+        toc = arb.toc;
+        content = arb.html;
+      }
+      return { content, toc };
     }
 
     // ========== BOOK MANAGEMENT ==========
@@ -1775,9 +1900,8 @@
           return;
         }
         const title = document.getElementById('pasteTitle').value.trim() || '붙여넣은 텍스트';
-        const content = plainToHtml(text);
-        const toc = extractTocFromHtml(content) || generateArbitraryToc(content);
-        const book = addBook({ title, content: enhanceDialogue(content), toc, type: 'txt' });
+        const built = buildContentAndToc(text, true);
+        const book = addBook({ title, content: built.content, toc: built.toc, type: 'txt' });
         closeOverlay('pasteOverlay');
         document.getElementById('pasteText').value = '';
         document.getElementById('pasteTitle').value = '';
